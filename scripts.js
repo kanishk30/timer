@@ -1,15 +1,9 @@
-/**
- * 1. User will
- */
-
 const app = () => {
 	const hourDigit = document.getElementById('hourDigit');
 	const minuteDigit = document.getElementById('minuteDigit');
 	const secondDigit = document.getElementById('secondDigit');
-
 	const resetBtn = document.getElementById('reset');
 	const modifyBtn = document.getElementById('modify');
-
 	const timeoutAudio = document.getElementById('timeout_audio');
 
 	const mask = document.querySelector('.mask');
@@ -19,11 +13,8 @@ const app = () => {
 	let isStarted = false;
 	let isTimerRunning = false;
 	let timerID;
-	let initialTimeLimit =
-		secondDigit.innerHTML * 1000 +
-		minuteDigit.innerHTML * 60 * 1000 +
-		hourDigit.innerHTML * 60 * 60 * 1000; // in ms.
-	let remainingTime = null; // in ms.
+	let initialTimeLimit = null;
+	let remainingTime = null;
 
 	const padTime = (val) => {
 		const appendedZero = '0' + Math.floor(val);
@@ -31,19 +22,28 @@ const app = () => {
 		return firstTwoChar;
 	};
 
-	const getRemainingTime = (endTime = initialTimeLimit) => {
-		return endTime - 1000;
-	};
+	const getRemainingTime = (endTime = initialTimeLimit) => endTime - 1000;
 
 	const isTimeZero = () => {
 		const sec = secondDigit.innerHTML;
 		const min = minuteDigit.innerHTML;
 		const hr = hourDigit.innerHTML;
-		if (!Number(hr) && !Number(min) && !Number(sec)) return true;
-		return false;
+		return !Number(hr) && !Number(min) && !Number(sec);
 	};
 
-	const finishTimer = () => {
+	const setDigits = (time) => {
+		const seconds = padTime((time / 1000) % 60);
+		const minutes = padTime((time / (60 * 1000)) % 60);
+		let hours = Math.floor(time / (60 * 60 * 1000)).toString();
+		if (hours.length === 1) {
+			hours = '0' + hours;
+		}
+		hourDigit.innerHTML = hours;
+		minuteDigit.innerHTML = minutes;
+		secondDigit.innerHTML = seconds;
+	};
+
+	const timeOver = () => {
 		clearTimeout(timerID);
 		timeoutAudio.play();
 		isTimerRunning = false;
@@ -54,32 +54,20 @@ const app = () => {
 		isStarted = false;
 	};
 
-	let delta = 0;
+	let delta = 0; // to track lost time due to setInterval.
 	let expected;
 
 	const startCountdownTimer = () => {
-		// let remainingTime = initialTimeLimit; // in ms
 		console.log(Date.now(), new Date());
 		remainingTime = getRemainingTime(remainingTime); // in ms
-		const seconds = padTime((remainingTime / 1000) % 60);
-		const minutes = padTime((remainingTime / (60 * 1000)) % 60);
-		const hours = padTime((remainingTime / (60 * 60 * 1000)) % 24);
-
-		hourDigit.innerHTML = hours;
-		minuteDigit.innerHTML = minutes;
-		secondDigit.innerHTML = seconds;
+		setDigits(remainingTime);
 
 		mask.style.animationPlayState = 'running';
 		timerAnalog.style.animationPlayState = 'running';
 
-		if (remainingTime >= 1000) {
-			// initialTimeLimit = remainingTime;
-		}
-
 		if (remainingTime < 1000) {
-			finishTimer();
+			timeOver();
 			return;
-			// tell user that time is over.
 		}
 		delta = Date.now() - expected;
 		expected = expected + 1000;
@@ -96,13 +84,7 @@ const app = () => {
 		mask.style.animationPlayState = 'paused';
 		timerAnalog.style.animationPlayState = 'paused';
 		isStarted = false;
-		const seconds = padTime((initialTimeLimit / 1000) % 60);
-		const minutes = padTime((initialTimeLimit / (60 * 1000)) % 60);
-		const hours = padTime((initialTimeLimit / (60 * 60 * 1000)) % 24);
-
-		hourDigit.innerHTML = hours;
-		minuteDigit.innerHTML = minutes;
-		secondDigit.innerHTML = seconds;
+		setDigits(initialTimeLimit);
 		modifyBtn.disabled = false;
 		timerAnalog.style.display = 'none';
 	};
@@ -118,8 +100,8 @@ const app = () => {
 			mask.style.animationPlayState = 'running';
 			timerAnalog.style.animationPlayState = 'running';
 
-			mask.style.animationDuration = initialTimeLimit / 1000 + 's';
-			timerAnalog.style.animationDuration = initialTimeLimit / 1000 + 's';
+			mask.style.animationDuration = `${initialTimeLimit / 1000}s`;
+			timerAnalog.style.animationDuration = `${initialTimeLimit / 1000}s`;
 			remainingTime = initialTimeLimit;
 		}
 		isStarted = true;

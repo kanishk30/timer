@@ -1,7 +1,8 @@
-* {
-	box-sizing: border-box;
+:root {
+	--primary-wheel-color: rgb(26, 144, 255);
+	--secondary-wheel-color: #eee;
+	--btn-primary: rgb(25, 118, 210);
 }
-
 html {
 	font-size: 62.5%;
 	font-family: Arial, Helvetica, sans-serif;
@@ -11,6 +12,7 @@ body {
 	margin: 0;
 	padding: 0;
 	background: #f7f7f7;
+	box-sizing: border-box;
 }
 
 main {
@@ -22,25 +24,15 @@ main {
 }
 
 button {
-	display: inline-flex;
-	-webkit-box-align: center;
-	align-items: center;
-	-webkit-box-pack: center;
-	justify-content: center;
 	position: relative;
 	box-sizing: border-box;
 	-webkit-tap-highlight-color: transparent;
-	outline: 0px;
 	border: 0px;
-
 	font-size: 1.5rem;
 	line-height: 1.75;
 	text-transform: uppercase;
 	padding: 0.5em 2em;
 	border-radius: 4px;
-	transition: background-color 250ms ease-out 0ms, box-shadow 250ms ease-out 0ms,
-		border-color 250ms ease-out 0ms, color 250ms ease-out 0ms;
-
 	box-shadow: rgb(0 0 0 / 20%) 0px 3px 1px -2px;
 }
 
@@ -49,21 +41,17 @@ button:disabled {
 	box-shadow: none;
 	background-color: rgba(0, 0, 0, 0.12);
 	pointer-events: none;
-	cursor: default;
 }
 
 .btn-primary {
-	background-color: rgb(25, 118, 210);
+	background-color: var(--btn-primary);
 	color: white;
 	margin-inline-end: 0.5em;
 }
 .btn-secondary {
 	background-color: white;
-	color: rgb(25, 118, 210);
+	color: var(--btn-primary);
 	margin-inline-start: 0.5em;
-}
-
-.action-btns {
 }
 
 .timer {
@@ -71,6 +59,7 @@ button:disabled {
 	flex-direction: column;
 	align-items: center;
 	min-height: 30em;
+	position: relative;
 }
 
 .digit {
@@ -83,7 +72,7 @@ button:disabled {
 	display: inline-block;
 	font-size: 3rem;
 	outline: none;
-	padding-right: 0.5em;
+	padding-inline-end: 0.5em;
 }
 
 .over {
@@ -91,12 +80,19 @@ button:disabled {
 	font-size: 3rem;
 	background-color: rgb(253, 237, 237);
 	font-weight: 500;
-	color: rgb(95, 33, 32);
+	color: rgb(207 22 19);
+	padding: 0.5em 1em;
+	position: absolute;
+	inset-block-start: 50%;
 }
 
 .timer-analog {
 	display: none;
-	background: -webkit-linear-gradient(left, rgb(26, 144, 255) 50%, #eee 50%);
+	background: -webkit-linear-gradient(
+		left,
+		var(--primary-wheel-color, cyan) 50%,
+		#eee 50%
+	);
 	border-radius: 100%;
 	height: 20rem;
 	width: 20rem;
@@ -105,46 +101,41 @@ button:disabled {
 	animation-name: time;
 	animation-duration: 1s;
 	animation-play-state: paused;
-	animation-timing-function: steps(1000, start);
-	animation-fill-mode: none;
+	animation-timing-function: linear;
 	-webkit-mask: radial-gradient(transparent 50%, #000 50%);
 	mask: radial-gradient(transparent 50%, #000 50%);
 }
 .mask {
-	border-radius: 100% 0 0 100% / 50% 0 0 50%;
 	height: 100%;
-	left: 0;
 	position: absolute;
-	top: 0;
 	width: 50%;
 	will-change: transform;
 	transform-origin: 100% 50%;
 	animation-name: mask;
 	animation-duration: 1s;
 	animation-play-state: paused;
-	animation-timing-function: steps(500, start);
-	animation-fill-mode: forwards;
+	animation-timing-function: linear;
 }
 @keyframes time {
 	100% {
-		-webkit-transform: rotate(360deg);
+		transform: rotate(360deg);
 	}
 }
 @keyframes mask {
 	0% {
-		background: #eee;
-		-webkit-transform: rotate(0deg);
+		background: var(--secondary-wheel-color, #eee);
+		transform: rotate(0deg);
 	}
 	50% {
-		background: #eee;
-		-webkit-transform: rotate(-180deg);
+		background: var(--secondary-wheel-color, #eee);
+		transform: rotate(-180deg);
 	}
 	50.01% {
-		background: rgb(26, 144, 255);
-		-webkit-transform: rotate(0deg);
+		background: var(--primary-wheel-color, cyan);
+		transform: rotate(0deg);
 	}
 	100% {
-		background: rgb(26, 144, 255);
-		-webkit-transform: rotate(-180deg);
+		background: var(--primary-wheel-color, cyan);
+		transform: rotate(-180deg);
 	}
 }

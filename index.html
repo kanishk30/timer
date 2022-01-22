@@ -1,48 +1,55 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="styles.css">
-  <title>Countdown Timer</title>
+	<head>
+		<meta charset="UTF-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<link rel="stylesheet" href="styles.css" />
+		<title>Countdown Timer</title>
+	</head>
+	<body>
+		<main>
+			<section class="timer">
+				<div>
+					<span
+						class="digit"
+						id="hourDigit"
+						contenteditable="true"
+						inputmode="numeric"
+						>00</span
+					>
+					<span class="placeholder">h</span>
+					<span
+						class="digit"
+						id="minuteDigit"
+						contenteditable="true"
+						inputmode="numeric"
+						>00</span
+					>
+					<span class="placeholder">m</span>
+					<span
+						class="digit"
+						id="secondDigit"
+						contenteditable="true"
+						inputmode="numeric"
+						>30</span
+					>
+					<span class="placeholder">s</span>
+				</div>
 
-</head>
-<body>
-  <header>
+				<div class="timer-analog">
+					<div class="mask"></div>
+				</div>
+				<div class="over">Time is up!</div>
+			</section>
 
-  </header>
-<main>
+			<section class="action-btns">
+				<button id="modify" class="btn-primary">Start</button>
+				<button id="reset" class="btn-secondary">Reset</button>
+			</section>
 
-  <section class='timer'>
-    <div>
-      <span  class='digit' id='hourDigit' contenteditable='true' inputmode='numeric'>00</span>
-      <span class="placeholder">h</span>
-      <span class='digit' id='minuteDigit' contenteditable='true' inputmode='numeric' >00</span>
-      <span class="placeholder">m</span>
-      <span class='digit' id='secondDigit' contenteditable='true' inputmode='numeric'>05</span>
-      <span class="placeholder">s</span>
-    </div>
-
-<div class="timer-analog" >
-  <div class="mask"></div>
-</div>
-<div class='over'>Time is up!</div>
-  </section>
-
-  <section class='action-btns'>
-    <button id='modify' class='btn-primary'>Start</button>
-    <button id='reset' class='btn-secondary'>Reset</button>
-  </section>
-
-  <audio id="timeout_audio"></audio>
-
-</main>
-
-<footer>
-
-</footer>
-<script type='text/javascript' src="scripts.js"></script>
-
-</body>
+			<audio id="timeout_audio"></audio>
+		</main>
+		<script type="text/javascript" defer src="scripts.js"></script>
+	</body>
 </html>
