@@ -19,7 +19,10 @@ const app = () => {
 	let isStarted = false;
 	let isTimerRunning = false;
 	let timerID;
-	let initialTimeLimit = null; // in ms.
+	let initialTimeLimit =
+		secondDigit.innerHTML * 1000 +
+		minuteDigit.innerHTML * 60 * 1000 +
+		hourDigit.innerHTML * 60 * 60 * 1000; // in ms.
 	let remainingTime = null; // in ms.
 
 	const padTime = (val) => {
@@ -32,8 +35,28 @@ const app = () => {
 		return endTime - 1000;
 	};
 
+	const isTimeZero = () => {
+		const sec = secondDigit.innerHTML;
+		const min = minuteDigit.innerHTML;
+		const hr = hourDigit.innerHTML;
+		if (!Number(hr) && !Number(min) && !Number(sec)) return true;
+		return false;
+	};
+
+	const finishTimer = () => {
+		clearTimeout(timerID);
+		timeoutAudio.play();
+		isTimerRunning = false;
+		modifyBtn.innerHTML = 'Start';
+		timerAnalog.style.display = 'none';
+		over.style.display = 'block';
+		modifyBtn.disabled = true;
+		isStarted = false;
+	};
+
 	let delta = 0;
 	let expected;
+
 	const startCountdownTimer = () => {
 		// let remainingTime = initialTimeLimit; // in ms
 		console.log(Date.now(), new Date());
@@ -54,12 +77,7 @@ const app = () => {
 		}
 
 		if (remainingTime < 1000) {
-			clearTimeout(timerID);
-			timeoutAudio.play();
-			isTimerRunning = false;
-			modifyBtn.innerHTML = 'Start';
-			timerAnalog.style.display = 'none';
-			over.style.display = 'block';
+			finishTimer();
 			return;
 			// tell user that time is over.
 		}
@@ -78,7 +96,6 @@ const app = () => {
 		mask.style.animationPlayState = 'paused';
 		timerAnalog.style.animationPlayState = 'paused';
 		isStarted = false;
-		timerAnalog.style.display = 'none';
 		const seconds = padTime((initialTimeLimit / 1000) % 60);
 		const minutes = padTime((initialTimeLimit / (60 * 1000)) % 60);
 		const hours = padTime((initialTimeLimit / (60 * 60 * 1000)) % 24);
@@ -86,6 +103,8 @@ const app = () => {
 		hourDigit.innerHTML = hours;
 		minuteDigit.innerHTML = minutes;
 		secondDigit.innerHTML = seconds;
+		modifyBtn.disabled = false;
+		timerAnalog.style.display = 'none';
 	};
 
 	const handleStartStopBtn = () => {
@@ -119,12 +138,18 @@ const app = () => {
 		}
 	};
 
-	const handleDigitChange = (event) => {
+	const handleDigitChange = (event = {}) => {
 		const { target = {} } = event;
-		console.log(target, 'digit event');
 		let value = target.innerText;
+		if (isTimeZero()) {
+			resetBtn.disabled = true;
+			modifyBtn.disabled = true;
+		} else {
+			resetBtn.disabled = false;
+			modifyBtn.disabled = false;
+		}
 		if (value.length < 2) return;
-		target.innerText = value ? padTime(value.slice(0, 2)) : '00';
+		// target.innerText = value ? padTime(value.slice(0, 2)) : '00';
 	};
 
 	const addEvents = () => {
@@ -143,7 +168,3 @@ const app = () => {
 };
 
 window.addEventListener('DOMContentReady', app());
-
-function timeChanged(ev) {
-	console.log(ev, 'ev');
-}
