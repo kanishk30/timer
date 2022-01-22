@@ -44,6 +44,14 @@ button {
 	box-shadow: rgb(0 0 0 / 20%) 0px 3px 1px -2px;
 }
 
+button:disabled {
+	color: rgba(0, 0, 0, 0.26);
+	box-shadow: none;
+	background-color: rgba(0, 0, 0, 0.12);
+	pointer-events: none;
+	cursor: default;
+}
+
 .btn-primary {
 	background-color: rgb(25, 118, 210);
 	color: white;
@@ -68,6 +76,7 @@ button {
 .digit {
 	font-size: 6rem;
 	cursor: pointer;
+	outline: 0;
 }
 
 .placeholder {
