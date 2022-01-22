@@ -5,10 +5,14 @@ const app = () => {
 	const resetBtn = document.getElementById('reset');
 	const modifyBtn = document.getElementById('modify');
 	const timeoutAudio = document.getElementById('timeout_audio');
-
 	const mask = document.querySelector('.mask');
 	const timerAnalog = document.querySelector('.timer-analog');
 	const over = document.querySelector('.over');
+
+	const ONE_SECOND = 1000;
+	const ONE_MINUTE = 60 * 1000;
+	const ONE_HOUR = 60 * 60 * 1000;
+	const TIMER_SOUND = 'http://soundbible.com/grab.php?id=1252&type=mp3';
 
 	let isStarted = false;
 	let isTimerRunning = false;
@@ -25,33 +29,35 @@ const app = () => {
 	const getRemainingTime = (endTime = initialTimeLimit) => endTime - 1000;
 
 	const isTimeZero = () => {
-		const sec = secondDigit.innerHTML;
-		const min = minuteDigit.innerHTML;
-		const hr = hourDigit.innerHTML;
+		const sec = secondDigit.textContent;
+		const min = minuteDigit.textContent;
+		const hr = hourDigit.textContent;
 		return !Number(hr) && !Number(min) && !Number(sec);
 	};
 
 	const setDigits = (time) => {
-		const seconds = padTime((time / 1000) % 60);
-		const minutes = padTime((time / (60 * 1000)) % 60);
-		let hours = Math.floor(time / (60 * 60 * 1000)).toString();
+		const seconds = padTime((time / ONE_SECOND) % 60);
+		const minutes = padTime((time / ONE_MINUTE) % 60);
+		let hours = Math.floor(time / ONE_HOUR).toString();
 		if (hours.length === 1) {
 			hours = '0' + hours;
 		}
-		hourDigit.innerHTML = hours;
-		minuteDigit.innerHTML = minutes;
-		secondDigit.innerHTML = seconds;
+
+		hourDigit.textContent = hours;
+		minuteDigit.textContent = minutes;
+		secondDigit.textContent = seconds;
 	};
 
 	const timeOver = () => {
 		clearTimeout(timerID);
 		timeoutAudio.play();
 		isTimerRunning = false;
-		modifyBtn.innerHTML = 'Start';
+		modifyBtn.textContent = 'Start';
 		timerAnalog.style.display = 'none';
 		over.style.display = 'block';
 		modifyBtn.disabled = true;
 		isStarted = false;
+		console.log(Date.now(), 'Over');
 	};
 
 	let delta = 0; // to track lost time due to setInterval.
@@ -60,13 +66,12 @@ const app = () => {
 	const startCountdownTimer = () => {
 		console.log(Date.now(), new Date());
 		remainingTime = getRemainingTime(remainingTime); // in ms
-		setDigits(remainingTime);
-
 		mask.style.animationPlayState = 'running';
 		timerAnalog.style.animationPlayState = 'running';
-
+		setDigits(remainingTime);
 		if (remainingTime < 1000) {
 			timeOver();
+
 			return;
 		}
 		delta = Date.now() - expected;
@@ -77,52 +82,47 @@ const app = () => {
 	const handleResetBtn = () => {
 		clearTimeout(timerID);
 		over.style.display = 'none';
-		modifyBtn.innerHTML = 'Start';
+		modifyBtn.textContent = 'Start';
 		isTimerRunning = false;
-		mask.style.animationDirection = 'forwards';
-		timerAnalog.style.animationDirection = 'forwards';
-		mask.style.animationPlayState = 'paused';
-		timerAnalog.style.animationPlayState = 'paused';
 		isStarted = false;
 		setDigits(initialTimeLimit);
 		modifyBtn.disabled = false;
 		timerAnalog.style.display = 'none';
+		if (!initialTimeLimit) modifyBtn.disabled = true;
 	};
 
 	const handleStartStopBtn = () => {
 		over.style.display = 'none';
 		if (!isStarted) {
 			initialTimeLimit =
-				secondDigit.innerHTML * 1000 +
-				minuteDigit.innerHTML * 60 * 1000 +
-				hourDigit.innerHTML * 60 * 60 * 1000;
+				secondDigit.textContent * ONE_SECOND +
+				minuteDigit.textContent * ONE_MINUTE +
+				hourDigit.textContent * ONE_HOUR;
 
 			mask.style.animationPlayState = 'running';
 			timerAnalog.style.animationPlayState = 'running';
 
-			mask.style.animationDuration = `${initialTimeLimit / 1000}s`;
-			timerAnalog.style.animationDuration = `${initialTimeLimit / 1000}s`;
+			mask.style.animationDuration = `${initialTimeLimit / ONE_SECOND}s`;
+			timerAnalog.style.animationDuration = `${initialTimeLimit / ONE_SECOND}s`;
 			remainingTime = initialTimeLimit;
 		}
 		isStarted = true;
 		if (isTimerRunning) {
+			isTimerRunning = false;
+			modifyBtn.textContent = 'Start';
+			clearTimeout(timerID);
 			mask.style.animationPlayState = 'paused';
 			timerAnalog.style.animationPlayState = 'paused';
-			isTimerRunning = false;
-			modifyBtn.innerHTML = 'Start';
-			clearTimeout(timerID);
 		} else {
 			timerAnalog.style.display = 'block';
 			expected = Date.now() + 1000;
 			timerID = setTimeout(startCountdownTimer, 1000);
-			modifyBtn.innerHTML = 'Stop';
+			modifyBtn.textContent = 'Stop';
 			isTimerRunning = true;
 		}
 	};
 
-	const handleDigitChange = (event = {}) => {
-		const { target = {} } = event;
-		let value = target.innerText;
+	const handleDigitChange = ({ target = {} }) => {
 		if (isTimeZero()) {
 			resetBtn.disabled = true;
 			modifyBtn.disabled = true;
@@ -130,8 +130,6 @@ const app = () => {
 			resetBtn.disabled = false;
 			modifyBtn.disabled = false;
 		}
-		if (value.length < 2) return;
-		// target.innerText = value ? padTime(value.slice(0, 2)) : '00';
 	};
 
 	const addEvents = () => {
@@ -140,12 +138,16 @@ const app = () => {
 		hourDigit.addEventListener('input', handleDigitChange);
 		minuteDigit.addEventListener('input', handleDigitChange);
 		secondDigit.addEventListener('input', handleDigitChange);
+
+		// HACK!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+		// !!!!!!!!!!!!!!!!
+		// mask.addEventListener('webkitAnimationEnd', timeOver);
 	};
 
 	addEvents();
 
 	// Initialize timeout sound
-	timeoutAudio.src = 'http://soundbible.com/grab.php?id=1252&type=mp3';
+	timeoutAudio.src = TIMER_SOUND;
 	timeoutAudio.load();
 };
 
