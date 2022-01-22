@@ -33,6 +33,7 @@ button {
 	text-transform: uppercase;
 	padding: 0.5em 2em;
 	border-radius: 4px;
+	min-width: 11rem;
 	box-shadow: rgb(0 0 0 / 20%) 0px 3px 1px -2px;
 }
 
