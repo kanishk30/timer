@@ -71,7 +71,6 @@ const app = () => {
 		setDigits(remainingTime);
 		if (remainingTime < 1000) {
 			timeOver();
-
 			return;
 		}
 		delta = Date.now() - expected;
@@ -122,13 +121,19 @@ const app = () => {
 		}
 	};
 
-	const handleDigitChange = ({ target = {} }) => {
+	const handleDigitChange = () => {
 		if (isTimeZero()) {
 			resetBtn.disabled = true;
 			modifyBtn.disabled = true;
 		} else {
 			resetBtn.disabled = false;
 			modifyBtn.disabled = false;
+		}
+	};
+
+	const allowNumbers = (ev) => {
+		if (isNaN(String.fromCharCode(ev.which)) || ev.which === 13) {
+			ev.preventDefault();
 		}
 	};
 
@@ -139,9 +144,9 @@ const app = () => {
 		minuteDigit.addEventListener('input', handleDigitChange);
 		secondDigit.addEventListener('input', handleDigitChange);
 
-		// HACK!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-		// !!!!!!!!!!!!!!!!
-		// mask.addEventListener('webkitAnimationEnd', timeOver);
+		hourDigit.addEventListener('keypress', allowNumbers);
+		minuteDigit.addEventListener('keypress', allowNumbers);
+		secondDigit.addEventListener('keypress', allowNumbers);
 	};
 
 	addEvents();
