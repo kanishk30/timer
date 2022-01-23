@@ -16,7 +16,7 @@ const app = () => {
 
 	let isStarted = false;
 	let isTimerRunning = false;
-	let timerID;
+	let timerID = null;
 	let initialTimeLimit = null;
 	let remainingTime = null;
 
@@ -26,8 +26,10 @@ const app = () => {
 		return firstTwoChar;
 	};
 
+	// subtract one second.
 	const getRemainingTime = (endTime = initialTimeLimit) => endTime - 1000;
 
+	// check if entered time is 00:00:00
 	const isTimeZero = () => {
 		const sec = secondDigit.textContent;
 		const min = minuteDigit.textContent;
@@ -35,6 +37,7 @@ const app = () => {
 		return !Number(hr) && !Number(min) && !Number(sec);
 	};
 
+	// set the timer digits
 	const setDigits = (time) => {
 		const seconds = padTime((time / ONE_SECOND) % 60);
 		const minutes = padTime((time / ONE_MINUTE) % 60);
@@ -57,14 +60,12 @@ const app = () => {
 		over.style.display = 'block';
 		modifyBtn.disabled = true;
 		isStarted = false;
-		console.log(Date.now(), 'Over');
 	};
 
 	let delta = 0; // to track lost time due to setInterval.
 	let expected;
 
 	const startCountdownTimer = () => {
-		console.log(Date.now(), new Date());
 		remainingTime = getRemainingTime(remainingTime); // in ms
 		mask.style.animationPlayState = 'running';
 		timerAnalog.style.animationPlayState = 'running';
@@ -73,8 +74,10 @@ const app = () => {
 			timeOver();
 			return;
 		}
+		// to account for lost time due to setTimeout
 		delta = Date.now() - expected;
 		expected = expected + 1000;
+		// 1000 - delta to make sure timer adjusts for lost time.
 		timerID = setTimeout(startCountdownTimer, 1000 - delta);
 	};
 
@@ -90,8 +93,10 @@ const app = () => {
 		if (!initialTimeLimit) modifyBtn.disabled = true;
 	};
 
+	// triggered on Start / Stop button click.
 	const handleStartStopBtn = () => {
 		over.style.display = 'none';
+		// Started for the first time.
 		if (!isStarted) {
 			initialTimeLimit =
 				secondDigit.textContent * ONE_SECOND +
@@ -106,13 +111,16 @@ const app = () => {
 			remainingTime = initialTimeLimit;
 		}
 		isStarted = true;
+		// Pause
 		if (isTimerRunning) {
 			isTimerRunning = false;
 			modifyBtn.textContent = 'Start';
 			clearTimeout(timerID);
 			mask.style.animationPlayState = 'paused';
 			timerAnalog.style.animationPlayState = 'paused';
-		} else {
+		}
+		// Play
+		else {
 			timerAnalog.style.display = 'block';
 			expected = Date.now() + 1000;
 			timerID = setTimeout(startCountdownTimer, 1000);
@@ -131,12 +139,14 @@ const app = () => {
 		}
 	};
 
+	// Disallow non numerics
 	const allowNumbers = (ev) => {
 		if (isNaN(String.fromCharCode(ev.which)) || ev.which === 13) {
 			ev.preventDefault();
 		}
 	};
 
+	// Event handlers
 	const addEvents = () => {
 		resetBtn.addEventListener('click', handleResetBtn);
 		modifyBtn.addEventListener('click', handleStartStopBtn);
