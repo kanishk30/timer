@@ -4,7 +4,7 @@ const app = () => {
 	const secondDigit = document.getElementById('secondDigit');
 	const resetBtn = document.getElementById('reset');
 	const modifyBtn = document.getElementById('modify');
-	const timeoutAudio = document.getElementById('timeout_audio');
+	const timeoutAudio = document.getElementById('timeoutAudio');
 	const mask = document.querySelector('.mask');
 	const timerAnalog = document.querySelector('.timer-analog');
 	const over = document.querySelector('.over');

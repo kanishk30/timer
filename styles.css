@@ -46,11 +46,11 @@ button:disabled {
 
 .btn-primary {
 	background-color: var(--btn-primary);
-	color: white;
+	color: #fff;
 	margin-inline-end: 0.5em;
 }
 .btn-secondary {
-	background-color: white;
+	background-color: #fff;
 	color: var(--btn-primary);
 	margin-inline-start: 0.5em;
 }
